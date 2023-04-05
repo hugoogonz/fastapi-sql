@@ -8,7 +8,7 @@ from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 
 # Se establece el nombre del archivo de la base de datos y se crea una URL de conexión con la base de datos SQLite. 
-sqlite_file_name = "database.sqlite"
+sqlite_file_name = "../database.sqlite"
 base_dir = os.path.dirname(os.path.realpath(__file__))
 
 # La URL de conexión se utiliza para conectarse a la base de datos y crear el motor de la base de datos.

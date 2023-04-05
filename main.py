@@ -8,11 +8,22 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 
 from jwtmanager import create_token, validate_token
+from config.database import Session, engine, Base
+from models.movie import Movie
 
 app = FastAPI()
 
 app.title = "Mi aplicación con FastAPI"
 app.version = "0.0.1"
+
+# La línea de código Base.metadata.create_all(bind=engine) crea todas las tablas definidas en las clases que heredan de la clase base Base en la base de datos. 
+# La función create_all de la propiedad metadata de la clase Base es responsable de crear las tablas en la base de datos.
+
+# El argumento bind se utiliza para especificar el motor de la base de datos que se va a utilizar para crear las tablas. 
+# En este caso, se utiliza el motor engine que fue creado previamente con la función create_engine de SQLAlchemy.
+# Esta línea de código es necesaria para crear todas las tablas definidas en las clases que heredan de la clase base Base en la base de datos
+# Almacenar y trear datos de la tablar
+Base.metadata.create_all(bind=engine) 
 
 
 class JWTBearer(HTTPBearer):
