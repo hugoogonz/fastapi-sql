@@ -9,7 +9,7 @@ from typing import Optional, List
 
 from jwtmanager import create_token, validate_token
 from config.database import Session, engine, Base
-from models.movie import Movie
+from models.movie import Movie as MovieModel
 
 app = FastAPI()
 
@@ -118,8 +118,13 @@ async def get_movie_by_category(category: str = Query(min_length=5, max_length=1
 
 @app.post('/movies', tags=['movies'], response_model=dict, status_code=201)
 async def create_movie(movie: Movie):
-    movies.append(movie)
-    return JSONResponse(status_code=201, content={"message": "The movie was saved successfully."})
+    # creo una sesion para conectarme a la base de datos
+    db = Session()
+    new_movie = MovieModel(**movie.dict())
+    db.add(new_movie)
+    db.commit()
+    return JSONResponse(status_code=201, content={"message": "Se ha registrado la película"})
+   
 
 # response_model=dict -> la respuesta sera un diccionario
 @app.put('/movies/{id}', tags=['movies'], response_model=dict, status_code=200)
