@@ -2,7 +2,7 @@ from fastapi import Depends, FastAPI, Body, HTTPException, Path, Query, Request
 # JSONResponse me permite enviar contenido en formato JSON hacia el cliente
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.security import HTTPBearer
-
+from fastapi.encoders import jsonable_encoder
 # me permite crear el esquema de datos
 from pydantic import BaseModel, Field
 from typing import Optional, List
@@ -96,18 +96,19 @@ async def login(user: User):
 @app.get('/movies', tags=['movies'], response_model=List[Movie], status_code=200, dependencies=[Depends(JWTBearer)])
 # la func retorna una Lista de tipo Movie
 async def get_movies() -> List[Movie]:
+    db = Session()
+    result = db.query(MovieModel).all()
     # retorna un contenido de movies en formato JSON
-    return JSONResponse(content=movies, status_code=200)  
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))  
 
 # http://127.0.0.1:5000/movies/2
 @app.get('/movies/{id}', tags=['movies'], response_model=Movie, status_code=200)
 async def get_movie_by_id(id: int = Path(ge=1, le=2000)) -> Movie:
-    for item in movies:
-        if item['id'] == id:
-            return JSONResponse(content=item, status_code=200)
-
-    return JSONResponse(content={"message": "Movie not found"}, status_code=404)
-
+    db = Session()
+    result = db.query(MovieModel).filter(MovieModel.id == id).first()
+    if not result:
+        return JSONResponse(status_code=404, content={'message': "No encontrado"})
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))
 
 # http://127.0.0.1:5000/movies/?category=Romantico
 @app.get('/movies/', tags=['movies'], response_model=List[Movie])
