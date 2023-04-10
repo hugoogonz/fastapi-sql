@@ -41,8 +41,8 @@ class User(BaseModel):
 
 class Movie(BaseModel):
     id: Optional[int] = None  # campo opcional
-    title: str = Field(min_length=5, max_length=15)  # campo maximo de 15 digitos
-    overview: str = Field(min_length=15, max_length=50)
+    title: str = Field(min_length=5, max_length=45)  # campo maximo de 15 digitos
+    overview: str = Field(min_length=15, max_length=250)
     year: int = Field(le=2025) # menor a 2025
     rating:float = Field(default=10, ge=1, le=10)
     category:str = Field(default='Categoria', min_length=5, max_length=15)
@@ -121,7 +121,9 @@ async def create_movie(movie: Movie):
     # creo una sesion para conectarme a la base de datos
     db = Session()
     new_movie = MovieModel(**movie.dict())
+    # añado la movie creada a la db
     db.add(new_movie)
+    # guardo el dato en la db
     db.commit()
     return JSONResponse(status_code=201, content={"message": "Se ha registrado la película"})
    
