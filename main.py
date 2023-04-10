@@ -113,8 +113,11 @@ async def get_movie_by_id(id: int = Path(ge=1, le=2000)) -> Movie:
 # http://127.0.0.1:5000/movies/?category=Romantico
 @app.get('/movies/', tags=['movies'], response_model=List[Movie])
 async def get_movie_by_category(category: str = Query(min_length=5, max_length=15)) -> List[Movie]:
-    data = list(filter(lambda item: item['category'] == category, movies))
-    return JSONResponse(content=data)
+    db = Session()
+    result = db.query(MovieModel).filter(MovieModel.id == id).all()
+    if not result:
+        return JSONResponse(status_code=404, content={'message': "No encontrado"})
+    return JSONResponse(status_code=200, content=jsonable_encoder(result))
 
 
 @app.post('/movies', tags=['movies'], response_model=dict, status_code=201)
