@@ -114,9 +114,9 @@ async def get_movie_by_id(id: int = Path(ge=1, le=2000)) -> Movie:
 @app.get('/movies/', tags=['movies'], response_model=List[Movie])
 async def get_movie_by_category(category: str = Query(min_length=5, max_length=15)) -> List[Movie]:
     db = Session()
-    result = db.query(MovieModel).filter(MovieModel.id == id).all()
+    result = db.query(MovieModel).filter(MovieModel.category == category).all()
     if not result:
-        return JSONResponse(status_code=404, content={'message': "No encontrado"})
+        return JSONResponse(status_code=404, content={'message': "Categoria no encontrada"})
     return JSONResponse(status_code=200, content=jsonable_encoder(result))
 
 
